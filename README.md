@@ -2,8 +2,7 @@
 A wrapper that makes it easier to create tables using the TFT-eSPI library
 
 # Disclaimer
-* This table is 'static' in nature. While it is possible to alter its dimensions, the number of columns/rows remains fixed at runtime.
-* All of the internal data structures are dynamically allocated, plans for constexpr version are underway.
+This table is 'static' in nature. While it is possible to alter its dimensions, the number of columns/rows remains fixed at runtime.
 
 # Examples
 ## 2x3
@@ -61,7 +60,7 @@ A wrapper that makes it easier to create tables using the TFT-eSPI library
   <img src="https://github.com/xarDeves/TFT_eSPI-Table/blob/master/images/4x4_custom.jpg" alt="table->4x4_custom">
 </div>
 
-## 1x3 cell inset
+## 1x4 cell inset
 ```cpp
   auto x = 0;
   auto y = 0;
@@ -94,7 +93,7 @@ A wrapper that makes it easier to create tables using the TFT-eSPI library
   table->draw();
 ```
 <div align="center">
-  <img src="https://github.com/xarDeves/TFT_eSPI-Table/blob/master/images/1x3_insets.jpg" alt="table->1x3_insets">
+  <img src="https://github.com/xarDeves/TFT_eSPI-Table/blob/master/images/1x3_insets.jpg" alt="table->1x4_inset">
 </div>
 
 ## Styling

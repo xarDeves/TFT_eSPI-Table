@@ -1,6 +1,6 @@
-#include "Table.h"
+#include "TableHeap.h"
 
-Table::Table(TFT_eSPI *tft, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
+TableHeap::TableHeap(TFT_eSPI *tft, uint16_t x, uint16_t y, uint16_t width, uint16_t height,
              uint8_t rows, uint8_t columns, uint16_t outlineColor, uint16_t fillColor)
     : tft(tft), x(x), y(y), paddingTop(0), paddingBottom(0), paddingLeft(0), paddingRight(0),
       rows(rows), columns(columns), outlineColor(outlineColor),
@@ -9,14 +9,14 @@ Table::Table(TFT_eSPI *tft, uint16_t x, uint16_t y, uint16_t width, uint16_t hei
   allocateArrays();
 }
 
-void Table::generate() {
+void TableHeap::generate() {
   calculateColumnWidths();
   calculateRowHeights();
   calculateCellCoordinates();
   calculateCellCenters();
 }
 
-void Table::calculateColumnWidths() {
+void TableHeap::calculateColumnWidths() {
   auto remainingWidth = width - (paddingLeft + paddingRight);
 
   auto specifiedColumns = 0;
@@ -38,7 +38,7 @@ void Table::calculateColumnWidths() {
   }
 }
 
-void Table::calculateRowHeights() {
+void TableHeap::calculateRowHeights() {
   auto remainingHeight = height - (paddingTop + paddingBottom);
 
   auto specifiedRows = 0;
@@ -60,7 +60,7 @@ void Table::calculateRowHeights() {
   }
 }
 
-void Table::calculateCellCoordinates() {
+void TableHeap::calculateCellCoordinates() {
   auto currentX = x + paddingLeft;
   auto currentY = y + paddingTop;
 
@@ -79,7 +79,7 @@ void Table::calculateCellCoordinates() {
   }
 }
 
-void Table::calculateCellCenters() {
+void TableHeap::calculateCellCenters() {
   for (auto row = 0; row < rows; row++) {
     auto trueY = y + paddingTop;
     for (auto i = 0; i < row; i++) {
@@ -94,7 +94,7 @@ void Table::calculateCellCenters() {
   }
 }
 
-void Table::draw() const {
+void TableHeap::draw() const {
   for (auto row = 0; row < rows; row++) {
     for (auto column = 0; column < columns; column++) {
       auto x = cellXCoordinates[row][column];
@@ -110,7 +110,7 @@ void Table::draw() const {
   }
 }
 
-void Table::drawCellText(uint8_t row, uint8_t column, String text, uint16_t clr) const {
+void TableHeap::drawCellText(uint8_t row, uint8_t column, String text, uint16_t clr) const {
   tft->setTextColor(clr);
 
   auto x = cellCenters[row][column][0];
@@ -121,7 +121,7 @@ void Table::drawCellText(uint8_t row, uint8_t column, String text, uint16_t clr)
   tft->setTextColor(ILI9486_WHITE);
 }
 
-void Table::drawCellOutline(uint8_t row, uint8_t column) const {
+void TableHeap::drawCellOutline(uint8_t row, uint8_t column) const {
   auto x = cellXCoordinates[row][column];
   auto y = cellYCoordinates[row][column];
   auto width = columnWidths[column];
@@ -131,7 +131,7 @@ void Table::drawCellOutline(uint8_t row, uint8_t column) const {
   tft->drawRect(x, y, width, height, outlineColor);
 }
 
-void Table::eraseCell(uint8_t row, uint8_t column) const {
+void TableHeap::eraseCell(uint8_t row, uint8_t column) const {
   auto x = cellXCoordinates[row][column];
   auto y = cellYCoordinates[row][column];
   auto width = columnWidths[column];
@@ -141,46 +141,47 @@ void Table::eraseCell(uint8_t row, uint8_t column) const {
   tft->fillRect(x + 1, y + 1, width - 2, height - 2, fillColor);
 }
 
-void Table::setCellFillColor(uint8_t row, uint8_t column, uint16_t color) {
+void TableHeap::setCellFillColor(uint8_t row, uint8_t column, uint16_t color) {
   cellFillColors[row][column] = color;
 }
 
-void Table::setCellOutlineColor(uint8_t row, uint8_t column, uint16_t color) {
+void TableHeap::setCellOutlineColor(uint8_t row, uint8_t column, uint16_t color) {
   cellOutlineColors[row][column] = color;
 }
 
-void Table::setRowHeight(uint8_t row, uint16_t height) {
+void TableHeap::setRowHeight(uint8_t row, uint16_t height) {
   rowHeights[row] = height;
 }
 
-void Table::setColumnWidth(uint8_t column, uint16_t width) {
+void TableHeap::setColumnWidth(uint8_t column, uint16_t width) {
   columnWidths[column] = width;
 }
 
-void Table::setPaddingTop(uint16_t top) { paddingTop = top; }
+void TableHeap::setPaddingTop(uint16_t top) { paddingTop = top; }
 
-void Table::setPaddingBottom(uint16_t bottom) { paddingBottom = bottom; }
+void TableHeap::setPaddingBottom(uint16_t bottom) { paddingBottom = bottom; }
 
-void Table::setPaddingLeft(uint16_t left) { paddingLeft = left; }
+void TableHeap::setPaddingLeft(uint16_t left) { paddingLeft = left; }
 
-void Table::setPaddingRight(uint16_t right) { paddingRight = right; }
+void TableHeap::setPaddingRight(uint16_t right) { paddingRight = right; }
 
-uint16_t Table::getX() const {
+uint16_t TableHeap::getX() const {
   return x + paddingLeft;
 }
 
-uint16_t Table::getY() const {
+uint16_t TableHeap::getY() const {
   return y + paddingTop;
 }
 
-uint8_t Table::getRows() const {
+uint8_t TableHeap::getRows() const {
   return rows;
 }
-uint8_t Table::getColumns() const {
+uint8_t TableHeap::getColumns() const {
   return columns;
 }
 
-uint16_t Table::getWidth() const {
+//FIXME: include padding
+uint16_t TableHeap::getWidth() const {
   uint16_t width = 0;
   for (uint8_t column = 0; column < columns; column++) {
     width += columnWidths[column];
@@ -188,7 +189,8 @@ uint16_t Table::getWidth() const {
   return width;
 }
 
-uint16_t Table::getHeight() const {
+//FIXME: include padding
+uint16_t TableHeap::getHeight() const {
   uint16_t height = 0;
   for (uint8_t row = 0; row < rows; row++) {
     height += rowHeights[row];
@@ -196,7 +198,7 @@ uint16_t Table::getHeight() const {
   return height;
 }
 
-void Table::allocateArrays() {
+void TableHeap::allocateArrays() {
   columnWidths = new uint16_t[columns];
   rowHeights = new uint16_t[rows];
   cellCenters = new uint16_t **[rows];
@@ -223,7 +225,7 @@ void Table::allocateArrays() {
   }
 }
 
-Table::~Table() {
+TableHeap::~TableHeap() {
   for (auto i = 0; i < rows; i++) {
     for (auto j = 0; j < columns; j++) {
       delete[] cellCenters[i][j];
